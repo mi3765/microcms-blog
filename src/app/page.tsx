@@ -1,50 +1,44 @@
-import HeroSection from "../components/HeroSection";
-import News from "../components/News";
-import Activity from "../components/Activity";
+import Link from "next/link";
 import { client } from "../../libs/microcms";
 
 type NewsItem = {
 	id: string;
 	title: string;
-	body: string;
-	image: {
-		url: string;
-	}[];
-};
-
-type ActivityItem = {
-	title: string;
-	sumnail: {
-		url: string;
-	};
-	body: string;
-	image: {
-		url: string;
-	}[];
-	thesis: boolean;
+	createdAt: string;
 };
 
 export default async function HomePage() {
-	try {
-		const newsResponse = await client.get({ endpoint: "news" });
-		const activitiesResponse = await client.get({ endpoint: "activity" });
+	const newsResponse = await client.get({
+		endpoint: "news",
+		queries: { limit: 5, orders: "-createdAt" },
+	});
 
-		const news: NewsItem[] = newsResponse.contents || [];
-		const activities: ActivityItem[] = activitiesResponse.contents || [];
+	const news: NewsItem[] = newsResponse.contents;
 
-		return (
-			<div>
-				<HeroSection
-					title="トップページのタイトル"
-					subtitle="トップページのサブタイトル"
-					imageUrl="https://example.com/hero-image.jpg"
-				/>
-				<News news={news} />
-				<Activity activities={activities} />
+	return (
+		<div className="container mx-auto p-4">
+			<h1 className="text-3xl font-bold mb-4">最新のお知らせ</h1>
+			<ul>
+				{news.map((item) => (
+					<li key={item.id} className="mb-2">
+						<Link href={`/news/${item.id}`}>
+							<h2 className="text-xl font-bold text-blue-500 hover:underline">
+								{item.title}
+							</h2>
+							<p className="text-gray-500">
+								{new Date(item.createdAt).toLocaleDateString()}
+							</p>
+						</Link>
+					</li>
+				))}
+			</ul>
+			<div className="mt-4">
+				<Link href="/news">
+					<button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+						すべて見る
+					</button>
+				</Link>
 			</div>
-		);
-	} catch (error) {
-		console.error("Error fetching data:", error);
-		return <div>データの取得に失敗しました。</div>;
-	}
+		</div>
+	);
 }
