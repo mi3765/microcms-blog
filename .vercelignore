@@ -1,0 +1,21 @@
+# Node.jsのモジュールディレクトリを無視
+node_modules
+
+# ローカル環境の設定ファイルを無視
+.env
+
+# ログファイルを無視
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# テストカバレッジのディレクトリを無視
+coverage
+
+# ビルド出力を無視（Next.jsは自動的にビルドを行うため）
+.next
+
+# その他の無視したいファイルやディレクトリ
+.DS_Store
+*.log
+*.swp
